@@ -26,6 +26,8 @@ PROVIDER ||= "libvirt"
 # Either centos or ubuntu
 DISTRO ||= "centos"
 
+ENV['VAGRANT_DEFAULT_PROVIDER'] = PROVIDER
+
 # The libvirt graphics_ip used for each guest. Only applies if PROVIDER
 # is libvirt.
 GRAPHICSIP ||= "127.0.0.1"
