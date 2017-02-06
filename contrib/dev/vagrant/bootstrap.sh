@@ -10,9 +10,6 @@ VM=$1
 MODE=$2
 KOLLA_PATH=$3
 
-export http_proxy=
-export https_proxy=
-
 if [ "$MODE" == 'aio' ]; then
     # Run registry on port 4000 since it may collide with keystone when doing AIO
     REGISTRY_PORT=4000
@@ -74,6 +71,9 @@ function prep_work {
         echo "Unsupported Distro: $DISTRO" 1>&2
         exit 1
     fi
+
+    # Upgrade pip to avoid warnings
+    pip install -U pip
 
     pip install --upgrade docker-py
 }
