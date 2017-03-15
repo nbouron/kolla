@@ -1,0 +1,15 @@
+FROM {{ namespace }}/{{ image_prefix }}base:{{ tag }}
+MAINTAINER {{ maintainer }}
+
+{% block skydive_header %}{% endblock %}
+
+{% import "macros.j2" as macros with context %}
+
+{{ macros.configure_user(name='skydive')}}
+
+RUN curl -o /usr/bin/skydive -L "https://github.com/skydive-project/skydive-binaries/raw/travis-builds/skydive-latest" \
+	&& chmod +x /usr/bin/skydive 
+
+{% block skydive_footer %}{% endblock %}
+{% block footer %}{% endblock %}
+{{ include_footer }}
