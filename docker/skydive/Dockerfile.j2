@@ -7,9 +7,72 @@ MAINTAINER {{ maintainer }}
 
 {{ macros.configure_user(name='skydive')}}
 
-RUN curl -o /usr/bin/skydive -L "https://github.com/skydive-project/skydive-binaries/raw/travis-builds/skydive-latest" \
-	&& chmod +x /usr/bin/skydive 
+{% if install_type == 'binary' %}
+
+	RUN curl -o /usr/bin/skydive -L "https://github.com/skydive-project/skydive-binaries/raw/travis-builds/skydive-latest" \
+		&& chmod +x /usr/bin/skydive
+
+{% elif install_type == 'source' %}
+
+	{% if base_distro in ['centos', 'oraclelinux', 'rhel'] %}
+
+		{% set skydive_base_packages = [
+		  'git',
+		  'make',
+		  'go',
+		  'libpcap-devel',
+		  'libxml2-devel',
+		  'wget',
+		  'unzip'
+		] %}
+
+		{{ macros.install_packages(skydive_base_packages | customizable("packages")) }}
+
+	{% elif base_distro in ['ubuntu', 'debian'] %}
+
+		 {% set skydive_base_packages = [
+		   'git',
+		   'curl',
+		   'gcc',
+		   'make',
+		   'libpcap-dev',
+		   'libxml2-dev',
+		   'wget',
+		   'pkg-config',
+		   'unzip'
+		] %}
+
+		{{ macros.install_packages(skydive_base_packages | customizable("packages")) }}
+
+		RUN cd /tmp \
+			&& curl -O https://storage.googleapis.com/golang/go1.7.4.linux-amd64.tar.gz \
+			&& tar xvzf go1.7.4.linux-amd64.tar.gz \
+			&& chown -R root:root ./go \
+			&& mv ./go /usr/local/
+
+	{% endif %}
+
+	RUN cd /tmp \
+		&& wget https://github.com/google/protobuf/releases/download/v3.0.0/protoc-3.0.0-linux-x86_64.zip \
+		&& unzip -d ./protoc3.0.0 protoc-3.0.0-linux-x86_64.zip \
+		&& cp -p ./protoc3.0.0/bin/protoc /usr/bin/ \
+		&& chmod 755 /usr/bin/protoc
+	RUN mkdir -p /tmp/go/src/github.com/
+	RUN mkdir /tmp/go/bin
+	ADD skydive-base-archive /tmp/go/src/github.com/skydive-project
+	RUN cd /tmp/go/src/github.com/skydive-project \
+		&& mv skydive-base-archive-master skydive \
+		&& cd skydive \
+		&& export GOPATH=/tmp/go \
+		&& export GOBIN=$GOPATH/bin \
+		&& export PATH=$PATH:$GOPATH:$GOBIN:/usr/local/go/bin \
+		&& make install
+	RUN cp /tmp/go/bin/skydive /usr/bin/  \
+		&& chmod 755 /usr/bin/skydive
+
+{% endif %}
 
 {% block skydive_footer %}{% endblock %}
 {% block footer %}{% endblock %}
 {{ include_footer }}
+
