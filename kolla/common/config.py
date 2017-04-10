@@ -528,10 +528,10 @@ SOURCES = {
         'type': 'url',
         'location': ('$tarballs_base/senlin/'
                      'senlin-master.tar.gz')},
-    'skydive-base': {
-        'type': 'url',
-        'location': ('tarballs_base/skydive/skydive/'
-                     'skydive-master.tar.gz')},
+    'skydive': {
+        'type': 'git',
+        'reference': 'master',
+        'location': ('https://github.com/skydive-project/skydive')},
     'solum-base': {
         'type': 'url',
         'location': ('$tarballs_base/solum/'
