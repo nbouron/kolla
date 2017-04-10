@@ -59,9 +59,9 @@ MAINTAINER {{ maintainer }}
 		&& chmod 755 /usr/bin/protoc
 	RUN mkdir -p /tmp/go/src/github.com/
 	RUN mkdir /tmp/go/bin
-	ADD skydive-base-archive /tmp/go/src/github.com/skydive-project
+	ADD skydive-archive /tmp/go/src/github.com/skydive-project
 	RUN cd /tmp/go/src/github.com/skydive-project \
-		&& mv skydive-base-archive-master skydive \
+		&& mv skydive-archive-* skydive \
 		&& cd skydive \
 		&& export GOPATH=/tmp/go \
 		&& export GOBIN=$GOPATH/bin \
